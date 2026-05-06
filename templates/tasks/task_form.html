@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Task - TaskFlow{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white/80 backdrop-blur-xl rounded-[3rem] shadow-2xl border border-white overflow-hidden flex flex-col md:flex-row mt-10">
+    
+    <!-- Image Section -->
+    <div class="md:w-5/12 relative hidden md:block">
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800" class="h-full w-full object-cover" alt="Task Planning">
+        <div class="absolute inset-0 bg-gradient-to-t from-purple-900/80 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-12 text-white">
+            <h3 class="text-3xl font-bold mb-2">Master Your Day</h3>
+            <p class="text-purple-100 opacity-90">Every great achievement starts with a single, well-defined task.</p>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="md:w-7/12 p-10 lg:p-14">
+        <div class="mb-10">
+            <h2 class="text-4xl font-black text-gray-900 tracking-tight">{{ action }} Task</h2>
+            <p class="text-gray-500 mt-2">{% if action == 'Create' %}Initialize your next big milestone.{% else %}Refine your objective.{% endif %}</p>
+        </div>
+        
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 text-red-500 p-4 rounded-2xl text-sm border border-red-100">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="space-y-2">
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-bold text-gray-700 ml-1">
+                    Task Title
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-red-500 text-xs mt-1 ml-1">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="space-y-2">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-bold text-gray-700 ml-1">
+                    Detailed Description
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-red-500 text-xs mt-1 ml-1">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+            
+            {% if form.user %}
+            <div class="space-y-2">
+                <label for="{{ form.user.id_for_label }}" class="block text-sm font-bold text-gray-700 ml-1">
+                    Assign to Employee
+                </label>
+                {{ form.user }}
+                {% if form.user.errors %}
+                    <div class="text-red-500 text-xs mt-1 ml-1">{{ form.user.errors }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="flex items-center bg-gray-50/50 p-5 rounded-2xl border border-gray-100 hover:bg-white transition-all">
+                {{ form.is_completed }}
+                <label for="{{ form.is_completed.id_for_label }}" class="ml-4 block text-sm font-semibold text-gray-800 cursor-pointer">
+                    Mark as completed immediately
+                </label>
+            </div>
+            
+            <div class="pt-6 flex items-center justify-between border-t border-gray-100 mt-10">
+                <a href="{% url 'dashboard' %}" class="text-gray-400 hover:text-gray-600 font-medium transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                </a>
+                <button type="submit" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-4 px-10 rounded-2xl hover:from-purple-700 hover:to-indigo-700 transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

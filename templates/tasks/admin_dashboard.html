@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - TaskFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Full-screen Intro Revelation */
+    #intro-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: black url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+    }
+    #intro-overlay.hidden-intro {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    .intro-video {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.6;
+    }
+    .intro-text {
+        position: relative;
+        z-index: 101;
+        text-align: center;
+        color: white;
+    }
+    .intro-title {
+        font-size: 6rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+        background: linear-gradient(to right, #ff0080, #7928ca, #4299e1, #48bb78);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: scaleIn 1.2s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards, shine 3s linear infinite;
+    }
+
+    @keyframes scaleIn {
+        0% { transform: scale(0.2); opacity: 0; filter: blur(50px); }
+        70% { transform: scale(1.1); opacity: 1; filter: blur(0); }
+        100% { transform: scale(1); opacity: 1; filter: blur(0); }
+    }
+    
+    @keyframes shine {
+        to { background-position: 200% center; }
+    }
+
+    /* Floating Animations */
+    @keyframes slideFloat {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        33% { transform: translate(30px, -50px) rotate(5deg); }
+        66% { transform: translate(-20px, 20px) rotate(-5deg); }
+        100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    
+    .floating-icon {
+        animation: slideFloat 12s ease-in-out infinite;
+    }
+
+    /* Sliding Carousel */
+    .user-carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        scrollbar-width: none;
+    }
+    .user-carousel::-webkit-scrollbar { display: none; }
+    .user-card {
+        flex: 0 0 280px;
+        scroll-snap-align: start;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Booming Intro Overlay -->
+<div id="intro-overlay">
+    <video class="intro-video" autoplay muted loop playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-colorful-inks-swirling-in-water-2804-large.mp4" type="video/mp4">
+    </video>
+    <div class="intro-text">
+        <h1 class="intro-title">TASKFLOW PRO</h1>
+        <p class="text-2xl text-white mt-4 tracking-[0.5em] font-bold opacity-0 animate-pulse" style="animation-delay: 1s; animation-fill-mode: forwards; animation-name: fadeIn; text-shadow: 0 0 20px rgba(255,255,255,0.5);">INITIALIZING POWER...</p>
+    </div>
+</div>
+
+<div class="relative overflow-hidden reveal-content">
+    <!-- Enhanced Floating Elements -->
+    <div class="absolute -top-20 -left-20 w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] floating-icon"></div>
+    <div class="absolute top-1/3 -right-20 w-80 h-80 bg-pink-500/20 rounded-full blur-[100px] floating-icon" style="animation-delay: -4s;"></div>
+    
+    <!-- Sliding/Floating Icons -->
+    <div class="absolute top-20 right-10 text-purple-600/10 text-9xl floating-icon" style="animation-duration: 15s;">
+        <i class="fa-solid fa-cloud-bolt"></i>
+    </div>
+    <div class="absolute bottom-20 left-10 text-indigo-600/10 text-8xl floating-icon" style="animation-delay: -2s; animation-duration: 18s;">
+        <i class="fa-solid fa-microchip"></i>
+    </div>
+
+    <div class="space-y-12">
+        <!-- Video Banner Header -->
+        <div class="relative rounded-[3rem] overflow-hidden shadow-2xl border border-white/40 aspect-[21/9] md:aspect-auto md:h-96">
+            <video class="absolute inset-0 w-full h-full object-cover scale-110" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-bright-abstract-background-with-glowing-particles-1135-large.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="relative z-10 p-8 md:p-12 flex flex-col md:flex-row justify-between items-center h-full">
+                <div class="flex items-center gap-8">
+                    <div class="relative group hidden lg:block">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
+                        <img class="relative h-32 w-32 rounded-full object-cover border-4 border-white shadow-2xl" src="{% if request.user.username == 'rinta' %}https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200{% else %}https://i.pravatar.cc/150?u={{ request.user.username }}{% endif %}" alt="Admin">
+                    </div>
+                    <div class="text-white text-center md:text-left">
+                        <h1 class="text-4xl md:text-5xl font-black mb-2 drop-shadow-2xl tracking-tighter">Command Center</h1>
+                        <p class="text-indigo-100 text-sm md:text-base opacity-90 drop-shadow-lg max-w-md leading-relaxed">Strategic oversight for the TaskFlow ecosystem.</p>
+                    </div>
+                </div>
+                
+                <a href="{% url 'task_create' %}" class="relative group mt-6 md:mt-0">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                    <div class="relative bg-black/40 backdrop-blur-xl text-white border border-white/50 px-10 py-5 rounded-2xl font-black text-xl transition-all duration-300 flex items-center shadow-2xl transform hover:-translate-y-1 hover:scale-105 active:scale-95">
+                        <i class="fa-solid fa-bolt-lightning mr-3 text-yellow-400 animate-bounce"></i> NEW TASK
+                    </div>
+                </a>
+            </div>
+
+        <!-- Sliding User Section -->
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-users-viewfinder text-purple-600"></i> Active Personnel
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="document.querySelector('.user-carousel').scrollBy({left: -300, behavior: 'smooth'})" class="p-2 rounded-full bg-white shadow-sm border hover:bg-gray-50 transition">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button onclick="document.querySelector('.user-carousel').scrollBy({left: 300, behavior: 'smooth'})" class="p-2 rounded-full bg-white shadow-sm border hover:bg-gray-50 transition">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="user-carousel">
+                {% for u in users %}
+                <div class="user-card bg-white/80 backdrop-blur-xl p-6 rounded-3xl border border-white shadow-lg hover:shadow-2xl transition-all duration-500 group">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="relative mb-4">
+                            <img class="h-20 w-20 rounded-2xl object-cover shadow-md group-hover:scale-110 transition-transform duration-500" 
+                                 src="{% if u.username == 'rinta' %}https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200{% else %}https://i.pravatar.cc/150?u={{ u.username }}{% endif %}" 
+                                 alt="{{ u.username }}">
+                            <div class="absolute -bottom-2 -right-2 w-6 h-6 rounded-full border-4 border-white {% if u.is_active %}bg-green-500{% else %}bg-gray-400{% endif %}"></div>
+                        </div>
+                        <h3 class="font-bold text-gray-900">{{ u.username }}</h3>
+                        <p class="text-sm text-gray-500 mb-4">{{ u.email|default:"No email" }}</p>
+                        <div class="w-full pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-wider {% if u.role == 'Admin' %}text-purple-600{% elif u.role == 'Manager' %}text-orange-600{% else %}text-blue-600{% endif %}">
+                                {{ u.role }}
+                            </span>
+                            <span class="text-xs text-gray-400">{{ u.tasks.count }} Tasks</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white p-6 flex items-center space-x-4 transition-transform hover:-translate-y-1 hover:shadow-lg">
+            <div class="bg-indigo-100 p-3 rounded-full text-indigo-600">
+                <i class="fa-solid fa-users text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Users</p>
+                <p class="text-2xl font-bold text-gray-900">{{ total_users }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white p-6 flex items-center space-x-4 transition-transform hover:-translate-y-1 hover:shadow-lg">
+            <div class="bg-blue-100 p-3 rounded-full text-blue-600">
+                <i class="fa-solid fa-tasks text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Tasks</p>
+                <p class="text-2xl font-bold text-gray-900">{{ total_tasks }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white p-6 flex items-center space-x-4 transition-transform hover:-translate-y-1 hover:shadow-lg">
+            <div class="bg-green-100 p-3 rounded-full text-green-600">
+                <i class="fa-solid fa-check-circle text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Completed Tasks</p>
+                <p class="text-2xl font-bold text-gray-900">{{ completed_tasks }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end">
+        <a href="{% url 'user_dashboard' %}" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2.5 rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+            View All Tasks
+        </a>
+    </div>
+
+    <!-- User List -->
+    <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="text-lg font-medium text-gray-900">Registered Users</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-purple-50/50">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-purple-800 uppercase tracking-wider">Username</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-purple-800 uppercase tracking-wider">Role</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-purple-800 uppercase tracking-wider">Joined</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-purple-800 uppercase tracking-wider">Tasks</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-purple-800 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white/40 divide-y divide-purple-100/50">
+                    {% for u in users %}
+                        <tr class="hover:bg-purple-50/50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <img class="h-10 w-10 rounded-full object-cover border-2 border-purple-200" 
+                                             src="{% if u.username == 'rinta' %}https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200{% else %}https://i.pravatar.cc/100?u={{ u.username }}{% endif %}" 
+                                             alt="{{ u.username }}">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ u.username }}</div>
+                                        <div class="text-sm text-gray-500">{{ u.email|default:"No email provided" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <form action="{% url 'change_user_role' u.pk %}" method="post" class="flex items-center gap-2">
+                                    {% csrf_token %}
+                                    <select name="role" onchange="this.form.submit()" class="text-xs font-semibold rounded-full bg-white border border-purple-200 px-3 py-1 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-all">
+                                        <option value="Admin" {% if u.role == 'Admin' %}selected{% endif %}>Admin</option>
+                                        <option value="Manager" {% if u.role == 'Manager' %}selected{% endif %}>Manager</option>
+                                        <option value="Project Lead" {% if u.role == 'Project Lead' %}selected{% endif %}>Project Lead</option>
+                                        <option value="Contributor" {% if u.role == 'Contributor' %}selected{% endif %}>Contributor</option>
+                                        <option value="User" {% if u.role == 'User' %}selected{% endif %}>User</option>
+                                        <option value="Auditor" {% if u.role == 'Auditor' %}selected{% endif %}>Auditor</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ u.date_joined|date:"M d, Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold text-purple-600">{{ u.tasks.count }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="text-gray-400 italic">No further actions</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        const intro = document.getElementById('intro-overlay');
+        setTimeout(() => {
+            intro.classList.add('hidden-intro');
+        }, 2500); // 2.5 second dramatic reveal
+    });
+</script>
+{% endblock %}

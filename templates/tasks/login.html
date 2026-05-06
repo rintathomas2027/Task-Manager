@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In - TaskFlow{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row mt-10 border border-white/50 dark:border-gray-800 transition-colors duration-500">
+    
+    <!-- Video Section -->
+    <div class="md:w-1/2 hidden md:block relative overflow-hidden bg-indigo-900">
+        <video class="absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-abstract-background-with-glowing-particles-20352-large.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-t from-indigo-950/90 via-transparent to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-12 text-white z-10 animate-fade-in-up">
+            <div class="mb-12 relative group inline-block">
+                <div class="absolute -inset-4 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-[3.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=600" class="relative w-64 h-64 rounded-[3.5rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] border-4 border-white/20 object-cover transform -rotate-3 hover:rotate-0 hover:scale-105 transition-all duration-700" alt="Professional">
+            </div>
+            <h2 class="text-4xl font-black mb-3 tracking-tight">Welcome Back</h2>
+            <p class="text-indigo-100 text-lg font-light leading-relaxed">Experience the next generation of productivity. Your tasks, beautifully organized.</p>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="md:w-1/2 p-10 lg:p-14 flex flex-col justify-center form-reveal">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-br from-indigo-400 to-pink-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i class="fa-solid fa-check-double text-white text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">TaskFlow</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Enter your credentials to access your account.</p>
+        </div>
+        
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 dark:bg-red-900/20 text-red-500 p-3 rounded-xl text-sm mb-4 border border-red-100 dark:border-red-900/30">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                        {{ field.label }}
+                    </label>
+                    <div class="relative">
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                        <div class="text-red-500 text-xs mt-1 ml-1">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black py-4 px-4 rounded-xl hover:from-indigo-600 hover:to-purple-600 focus:outline-none transition-all duration-300 shadow-xl transform hover:-translate-y-1">
+                    Log In to Dashboard
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-8">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Don't have an account? <a href="{% url 'signup' %}" class="font-bold text-indigo-600 dark:text-indigo-400 hover:text-pink-500 transition-colors">Sign up here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="password"], input[type="email"], select {
+        width: 100%;
+        padding: 0.85rem 1.25rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        font-size: 0.95rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+    }
+    .dark input[type="text"], .dark input[type="password"], .dark input[type="email"], .dark select {
+        background-color: rgba(31, 41, 55, 0.8);
+        border-color: #374151;
+        color: white;
+    }
+    input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, select:focus {
+        outline: none;
+        border-color: #6366f1;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        transform: translateY(-1px);
+    }
+    .dark input[type="text"]:focus, .dark input[type="password"]:focus, .dark input[type="email"]:focus, .dark select:focus {
+        background-color: #1f2937;
+        border-color: #818cf8;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+    .form-reveal {
+        animation: fadeInUp 1s ease-out 0.2s both;
+    }
+</style>
+{% endblock %}

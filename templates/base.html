@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Task Manager{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 flex flex-col min-h-screen bg-fixed transition-colors duration-500">
+
+    <nav class="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-b border-white/50 dark:border-gray-800 sticky top-0 z-50 transition-colors duration-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-6">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-bold text-xl">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>TaskFlow</span>
+                    </a>
+                    
+                    <!-- Primary Navigation Links -->
+                    <div class="hidden md:flex space-x-4">
+                        <a href="{% url 'home' %}" class="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors">Home</a>
+                        <a href="{% url 'about' %}" class="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors">About</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors">Dashboard</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300">
+                        <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon"></i>
+                        <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun"></i>
+                    </button>
+
+                    {% if user.is_authenticated %}
+                        <div class="flex items-center space-x-3 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-100 dark:border-gray-700">
+                            <img class="h-8 w-8 rounded-full object-cover ring-2 ring-indigo-500/20" 
+                                 src="{% if user.username == 'rinta' %}https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200{% else %}https://i.pravatar.cc/100?u={{ user.username }}{% endif %}" 
+                                 alt="{{ user.username }}">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                {{ user.username }} <span class="text-[10px] text-gray-400 font-bold uppercase ml-1">{{ user.role }}</span>
+                            </span>
+                        </div>
+                        <a href="{% url 'logout' %}" class="text-gray-500 dark:text-gray-400 hover:text-red-600 transition duration-150">
+                            <i class="fa-solid fa-sign-out-alt"></i> Logout
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Login</a>
+                        <a href="{% url 'signup' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 transition">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                    <div class="p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %} flex items-start">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'error' %}
+                                <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+                            {% elif message.tags == 'success' %}
+                                <i class="fa-solid fa-check-circle text-green-400"></i>
+                            {% else %}
+                                <i class="fa-solid fa-info-circle text-blue-400"></i>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white/50 backdrop-blur-sm border-t border-white/50 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; 2026 TaskFlow Manager. All rights reserved.
+        </div>
+    </footer>
+    <script>
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+        const btn = document.getElementById('theme-toggle');
+        
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            lightIcon.classList.remove('hidden');
+        } else {
+            darkIcon.classList.remove('hidden');
+        }
+
+        btn.addEventListener('click', function() {
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

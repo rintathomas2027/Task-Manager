@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - TaskFlow{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row mt-10 border border-white/50 dark:border-gray-800 transition-colors duration-500">
+    
+    <!-- Form Section -->
+    <div class="md:w-1/2 p-10 lg:p-14 flex flex-col justify-center order-2 md:order-1">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Create Account</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Join TaskFlow to organize your work beautifully.</p>
+        </div>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1 ml-1">
+                        {{ field.label }}
+                    </label>
+                    <div class="relative">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-1">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-red-500 text-xs mt-1 ml-1">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black py-4 px-4 rounded-xl hover:from-pink-600 hover:to-rose-600 focus:outline-none transition-all duration-300 shadow-xl transform hover:-translate-y-1">
+                    Sign Up Now
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-8">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Already have an account? <a href="{% url 'login' %}" class="font-bold text-rose-500 hover:text-indigo-600 transition-colors">Log in here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Image Section -->
+    <div class="md:w-1/2 hidden md:block relative order-1 md:order-2 bg-pink-900">
+        <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=800&auto=format&fit=crop" alt="Creative workspace" class="h-full w-full object-cover absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-t from-pink-950/90 via-transparent to-transparent"></div>
+        <div class="absolute bottom-0 right-0 p-10 text-white text-right">
+            <h2 class="text-3xl font-black mb-2">Get Started</h2>
+            <p class="text-pink-100 opacity-90">Elevate your productivity to the next level.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling for default django form fields */
+    input[type="text"], input[type="password"], input[type="email"], select {
+        width: 100%;
+        padding: 0.85rem 1.25rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        font-size: 0.95rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+    }
+    .dark input[type="text"], .dark input[type="password"], .dark input[type="email"], .dark select {
+        background-color: rgba(31, 41, 55, 0.8);
+        border-color: #374151;
+        color: white;
+    }
+    input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, select:focus {
+        outline: none;
+        border-color: #f43f5e;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.2);
+        transform: translateY(-1px);
+    }
+    .dark input[type="text"]:focus, .dark input[type="password"]:focus, .dark input[type="email"]:focus, .dark select:focus {
+        background-color: #1f2937;
+        border-color: #fb7185;
+    }
+</style>
+{% endblock %}
