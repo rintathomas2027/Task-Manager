@@ -168,7 +168,10 @@
                             <span class="text-xs font-bold uppercase tracking-wider {% if u.role == 'Admin' %}text-purple-600{% elif u.role == 'Manager' %}text-orange-600{% else %}text-blue-600{% endif %}">
                                 {{ u.role }}
                             </span>
-                            <span class="text-xs text-gray-400">{{ u.tasks.count }} Tasks</span>
+                            <div class="flex gap-1.5">
+                                <span class="text-[10px] font-bold bg-amber-100 text-amber-600 px-2 py-0.5 rounded-md shadow-sm border border-amber-200" title="Pending Tasks">{{ u.pending_count }} P</span>
+                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-md shadow-sm border border-emerald-200" title="Completed Tasks">{{ u.completed_count }} C</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -261,10 +264,70 @@
                                 </form>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ u.date_joined|date:"M d, Y" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-bold text-purple-600">{{ u.tasks.count }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-black text-gray-800">{{ u.tasks.count }} Total</span>
+                                    <span class="text-[10px] font-bold bg-amber-100 text-amber-600 px-2 py-1 rounded-full">{{ u.pending_count }} Pending</span>
+                                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full">{{ u.completed_count }} Done</span>
+                                </div>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 <span class="text-gray-400 italic">No further actions</span>
                             </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Task Activity Board -->
+    <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white overflow-hidden mt-8">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-indigo-50 to-purple-50">
+            <h2 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-satellite-dish text-indigo-500 mr-2 animate-pulse"></i> Live Task Status Board</h2>
+            <span class="text-xs font-bold text-indigo-500 bg-white px-3 py-1 rounded-full shadow-sm border border-indigo-100">Most Recent 10</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-white/50">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Task Title</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Assigned To</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white/40 divide-y divide-gray-100">
+                    {% for task in recent_tasks %}
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-bold text-gray-900 {% if task.is_completed %}line-through opacity-50{% endif %}">{{ task.title }}</div>
+                                <div class="text-xs text-gray-500 truncate max-w-xs">{{ task.description|default:""|truncatewords:8 }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <img class="h-6 w-6 rounded-full object-cover" src="{% if task.user.username == 'rinta' %}https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200{% else %}https://i.pravatar.cc/100?u={{ task.user.username }}{% endif %}" alt="{{ task.user.username }}">
+                                    <span class="text-sm font-semibold text-gray-700">{{ task.user.username }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if task.is_completed %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                        <i class="fa-solid fa-circle-check mr-1.5"></i> COMPLETED
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                                        <i class="fa-solid fa-fire-glow mr-1.5 animate-pulse"></i> PENDING
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500 font-medium">
+                                {{ task.updated_at|timesince }} ago
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">No tasks created yet.</td>
                         </tr>
                     {% endfor %}
                 </tbody>

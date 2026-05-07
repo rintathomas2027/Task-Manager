@@ -6,7 +6,7 @@ from django.contrib import messages
 from .models import Task, CustomUser
 from .forms import CustomUserCreationForm, TaskForm
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 
 def home(request):
     if request.user.is_authenticated:
@@ -70,13 +70,19 @@ def admin_dashboard(request):
     total_tasks = Task.objects.count()
     completed_tasks = Task.objects.filter(is_completed=True).count()
     
-    users = CustomUser.objects.all()
+    users = CustomUser.objects.annotate(
+        completed_count=Count('tasks', filter=Q(tasks__is_completed=True)),
+        pending_count=Count('tasks', filter=Q(tasks__is_completed=False))
+    )
+    
+    recent_tasks = Task.objects.all().select_related('user').order_by('-updated_at')[:10]
     
     context = {
         'total_users': total_users,
         'total_tasks': total_tasks,
         'completed_tasks': completed_tasks,
-        'users': users
+        'users': users,
+        'recent_tasks': recent_tasks
     }
     return render(request, 'tasks/admin_dashboard.html', context)
 
